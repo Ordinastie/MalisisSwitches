@@ -1,0 +1,16 @@
+[
+{
+  "modid": "malisisswitches",
+  "name": "MalisisSwitches",
+  "description": "New switches and buttons!",
+  "version": "${version}",
+  "logoFile": "MalisisSwitches.png",
+  "mcversion": "${mcversion}",
+  "url": "http://github.com/Ordinastie/MalisisSwitches",
+  "updateUrl": "",
+  "authors": [ "Ordinastie" ],
+  "parent":"",
+  "screenshots": []
+		
+}
+]
