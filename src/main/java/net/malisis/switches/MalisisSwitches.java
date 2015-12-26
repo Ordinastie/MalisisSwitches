@@ -28,10 +28,16 @@ import net.malisis.core.IMalisisMod;
 import net.malisis.core.MalisisCore;
 import net.malisis.core.configuration.Settings;
 import net.malisis.core.network.MalisisNetwork;
+import net.malisis.switches.block.Switch;
+import net.malisis.switches.item.PowerLinker;
+import net.malisis.switches.renderer.SwitchLinkRenderer;
+import net.malisis.switches.tileentity.SwitchTileEntity;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * @author Ordinastie
@@ -41,14 +47,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class MalisisSwitches implements IMalisisMod
 {
 
-	public static final String modid = "malisisblocks";
-	public static final String modname = "Malisis Blocks";
+	public static final String modid = "malisisswitches";
+	public static final String modname = "Malisis Switches";
 	public static final String version = "${version}";
 
 	public static MalisisSwitches instance;
 	public static MalisisNetwork network;
 
-	//public static CreativeTabs tab = new MalisisSwitchTab();
+	public static CreativeTabs tab = new MalisisSwitchesTab();
 
 	public MalisisSwitches()
 	{
@@ -83,20 +89,34 @@ public class MalisisSwitches implements IMalisisMod
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
-	{}
+	{
+		Blocks.switchBlock = new Switch();
+		Blocks.switchBlock.register();
+
+		Items.powerLinker = new PowerLinker();
+		Items.powerLinker.register();
+
+		GameRegistry.registerTileEntity(SwitchTileEntity.class, "switchTileEntity");
+
+		PowerManager.registerBlockData();
+	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
-	{}
+	{
+		if (MalisisCore.isClient())
+			new SwitchLinkRenderer().registerFor(SwitchTileEntity.class);
+
+	}
 
 	public static class Blocks
 	{
-
+		public static Switch switchBlock;
 	}
 
 	public static class Items
 	{
-
+		public static PowerLinker powerLinker;
 	}
 
 }
