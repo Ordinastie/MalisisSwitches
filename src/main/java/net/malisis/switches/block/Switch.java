@@ -38,6 +38,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -62,27 +63,33 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 {
 	public static PropertyBool POWERED = PropertyBool.create("POWER");
 
-	public Switch()
+	public Switch(String name)
 	{
 		super(Material.iron);
 		setCreativeTab(MalisisSwitches.tab);
 		setHardness(1.0F);
-		setName("switch");
+		setName(name);
 
 		setDefaultState(getDefaultState().withProperty(POWERED, false));
 	}
 
 	@Override
+	public PropertyDirection getPropertyDirection()
+	{
+		return ALL;
+	}
+
+	@Override
 	protected BlockState createBlockState()
 	{
-		return new BlockState(this, HORIZONTAL, POWERED);
+		return new BlockState(this, ALL, POWERED);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void createIconProvider(Object object)
 	{
-		iconProvider = new SwitchIconProvider();
+		iconProvider = new SwitchIconProvider(getRegistryName());
 	}
 
 	@Override
@@ -111,7 +118,13 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 		if (type == BoundingBoxType.COLLISION)
 			return null;
 
-		return new AxisAlignedBB(0.25F, 0.2625625F, 0, 0.75F, 0.734375F, 0.01F);
+		EnumFacing direction = IBlockDirectional.getDirection(world, pos);
+		if (direction == EnumFacing.DOWN)
+			return new AxisAlignedBB(0.25F, 0.99F, 0.25F, 0.75F, 1F, 0.75F);
+		else if (direction == EnumFacing.UP)
+			return new AxisAlignedBB(0.25F, 0F, 0.25F, 0.75F, 0.01F, 0.75F);
+		else
+			return new AxisAlignedBB(0.25F, 0.25F, 0, 0.75F, 0.75F, 0.01F);
 	}
 
 	@Override
@@ -214,8 +227,14 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 
 	public static class SwitchIconProvider implements IBlockIconProvider
 	{
-		private MalisisIcon switchOn = new MalisisIcon(MalisisSwitches.modid + ":blocks/switch_on");
-		private MalisisIcon switchOff = new MalisisIcon(MalisisSwitches.modid + ":blocks/switch_off");
+		private MalisisIcon switchOn;
+		private MalisisIcon switchOff;
+
+		public SwitchIconProvider(String name)
+		{
+			switchOn = new MalisisIcon(MalisisSwitches.modid + ":blocks/" + name + "_on");
+			switchOff = new MalisisIcon(MalisisSwitches.modid + ":blocks/" + name + "_off");
+		}
 
 		@Override
 		public void registerIcons(TextureMap textureMap)
@@ -233,7 +252,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 		@Override
 		public MalisisIcon getIcon(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side)
 		{
-			return MalisisSwitches.Blocks.switchBlock.isPowered(state) || side != IBlockDirectional.getDirection(state) ? switchOn : switchOff;
+			return ((Switch) state.getBlock()).isPowered(state) || side != IBlockDirectional.getDirection(state) ? switchOn : switchOff;
 		}
 	}
 }

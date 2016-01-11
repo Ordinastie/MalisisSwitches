@@ -28,6 +28,7 @@ import net.malisis.core.MalisisCore;
 import net.malisis.core.item.MalisisItem;
 import net.malisis.core.util.TileEntityUtils;
 import net.malisis.switches.MalisisSwitches;
+import net.malisis.switches.block.Switch;
 import net.malisis.switches.tileentity.SwitchTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -65,8 +66,10 @@ public class PowerLinker extends MalisisItem
 		if (!isStartSet(itemStack))
 		{
 			IBlockState state = world.getBlockState(pos);
-			if (state.getBlock() == MalisisSwitches.Blocks.switchBlock)
+			if (state.getBlock() instanceof Switch)
 				setStartPosition(itemStack, pos, world.getTotalWorldTime());
+			else if (world.isRemote)
+				MalisisCore.message("No switch selected.");
 			return !world.isRemote;
 		}
 
@@ -79,14 +82,11 @@ public class PowerLinker extends MalisisItem
 			return !world.isRemote;
 
 		if (!player.isSneaking())
-		{
-			MalisisCore.message("Linking " + pos);
 			te.linkPosition(pos);
-		}
 		else
 		{
-			MalisisCore.message("UnLinking " + pos);
-			te.unlinkPosition(pos);
+			if (!te.unlinkPosition(pos))
+				te.unlinkPosition(pos.offset(side));
 		}
 		//clearStartPosition(itemStack);
 		return !world.isRemote;
@@ -98,7 +98,7 @@ public class PowerLinker extends MalisisItem
 		if (world.isRemote || !isStartSet(itemStack))
 			return;
 
-		if (world.getTotalWorldTime() - getNBT(itemStack).getLong("time") > 400)
+		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).getHeldItem() != itemStack)
 			clearStartPosition(itemStack);
 	}
 
@@ -109,9 +109,7 @@ public class PowerLinker extends MalisisItem
 
 	protected boolean setStartPosition(ItemStack itemStack, BlockPos pos, long time)
 	{
-		MalisisCore.message("Start set");
 		getNBT(itemStack).setLong("start", pos.toLong());
-		getNBT(itemStack).setLong("time", time);
 		return true;
 	}
 
@@ -122,9 +120,7 @@ public class PowerLinker extends MalisisItem
 
 	protected boolean clearStartPosition(ItemStack itemStack)
 	{
-		MalisisCore.message("Start cleared");
 		getNBT(itemStack).removeTag("start");
-		getNBT(itemStack).removeTag("time");
 		return true;
 	}
 

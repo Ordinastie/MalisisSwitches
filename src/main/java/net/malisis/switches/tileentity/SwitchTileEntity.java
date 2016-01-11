@@ -29,10 +29,12 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Set;
 
-import net.malisis.switches.MalisisSwitches;
 import net.malisis.switches.PowerManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -58,12 +60,16 @@ public class SwitchTileEntity extends TileEntity
 		linkedPos.add(pos);
 	}
 
-	public void unlinkPosition(BlockPos pos)
+	public boolean unlinkPosition(BlockPos pos)
 	{
-		linkedPos.remove(pos);
+		if (!linkedPos.remove(pos))
+			return false;
+
 		PowerManager.setPower(getWorld(), pos, 0);
-		getWorld().notifyBlockOfStateChange(pos, MalisisSwitches.Blocks.switchBlock);
-		getWorld().notifyNeighborsOfStateChange(pos, MalisisSwitches.Blocks.switchBlock);
+		getWorld().notifyBlockOfStateChange(pos, getBlockType());
+		getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
+
+		return true;
 	}
 
 	public void setPower(int power)
@@ -71,8 +77,8 @@ public class SwitchTileEntity extends TileEntity
 		for (BlockPos pos : linkedPos)
 		{
 			PowerManager.setPower(getWorld(), pos, power);
-			getWorld().notifyBlockOfStateChange(pos, MalisisSwitches.Blocks.switchBlock);
-			getWorld().notifyNeighborsOfStateChange(pos, MalisisSwitches.Blocks.switchBlock);
+			getWorld().notifyBlockOfStateChange(pos, getBlockType());
+			getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
 		}
 	}
 
@@ -84,7 +90,6 @@ public class SwitchTileEntity extends TileEntity
 		for (BlockPos pos : linkedPos)
 			bytes.writeLong(pos.toLong());
 		tag.setByteArray("linkedPos", bytes.array());
-		System.out.println("Saved " + linkedPos.size());
 	}
 
 	@Override
@@ -94,13 +99,32 @@ public class SwitchTileEntity extends TileEntity
 		ByteBuf bytes = Unpooled.copiedBuffer(tag.getByteArray("linkedPos"));
 		for (int i = 0; i < bytes.capacity() / 8; i++)
 			linkedPos.add(BlockPos.fromLong(bytes.readLong()));
-		System.out.println("Read " + linkedPos.size());
+	}
+
+	@Override
+	public Packet getDescriptionPacket()
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
+		this.writeToNBT(nbt);
+		return new S35PacketUpdateTileEntity(pos, 0, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
+	{
+		this.readFromNBT(packet.getNbtCompound());
 	}
 
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
 	{
 		return oldState.getBlock() != newSate.getBlock();
+	}
+
+	@Override
+	public boolean shouldRenderInPass(int pass)
+	{
+		return pass == 1;
 	}
 
 	@Override

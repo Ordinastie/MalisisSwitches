@@ -22,25 +22,21 @@
  * THE SOFTWARE.
  */
 
-package net.malisis.switches;
+package net.malisis.switches.item;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
+import net.malisis.core.item.MalisisItem;
+import net.malisis.switches.MalisisSwitches;
 
 /**
  * @author Ordinastie
  *
  */
-public class MalisisSwitchesTab extends CreativeTabs
+public class GreenStone extends MalisisItem
 {
-	public MalisisSwitchesTab()
+	public GreenStone()
 	{
-		super(MalisisSwitches.modid);
-	}
-
-	@Override
-	public Item getTabIconItem()
-	{
-		return Item.getItemFromBlock(MalisisSwitches.Blocks.basicSwitch1);
+		setName("greenstone_dust");
+		setTexture(MalisisSwitches.modid + ":items/greenstone_dust");
+		setCreativeTab(MalisisSwitches.tab);
 	}
 }
