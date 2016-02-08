@@ -27,7 +27,8 @@ package net.malisis.switches.renderer;
 import java.util.Set;
 
 import net.malisis.core.MalisisRegistry;
-import net.malisis.core.block.IBlockDirectional;
+import net.malisis.core.block.component.DirectionalComponent;
+import net.malisis.core.block.component.PowerComponent;
 import net.malisis.core.renderer.MalisisRenderer;
 import net.malisis.core.renderer.RenderParameters;
 import net.malisis.core.renderer.element.Face;
@@ -41,7 +42,6 @@ import net.malisis.core.util.EntityUtils;
 import net.malisis.core.util.Point;
 import net.malisis.core.util.raytrace.Raytrace;
 import net.malisis.switches.MalisisSwitches;
-import net.malisis.switches.block.Switch;
 import net.malisis.switches.tileentity.SwitchTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -94,11 +94,11 @@ public class SwitchLinkRenderer extends MalisisRenderer implements IIconRegister
 			return;
 
 		Point startPoint = posToPoint(pos);
-		EnumFacing side = IBlockDirectional.getDirection(blockState);
+		EnumFacing side = DirectionalComponent.getDirection(blockState);
 		startPoint.x -= 0.5F * side.getFrontOffsetX();
 		startPoint.y -= 0.5F * side.getFrontOffsetY();
 		startPoint.z -= 0.5F * side.getFrontOffsetZ();
-		int powerColor = ((Switch) block).isPowered(blockState) ? 0x339933 : 0x990000;
+		int powerColor = PowerComponent.isPowered(blockState) ? 0x339933 : 0x990000;
 		Set<BlockPos> linkedPositions = ((SwitchTileEntity) tileEntity).linkedPositions();
 
 		//DRAWING LINES

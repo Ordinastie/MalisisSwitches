@@ -25,8 +25,11 @@
 package net.malisis.switches.block;
 
 import net.malisis.core.block.BoundingBoxType;
-import net.malisis.core.block.IBlockDirectional;
 import net.malisis.core.block.MalisisBlock;
+import net.malisis.core.block.component.DirectionalComponent;
+import net.malisis.core.block.component.DirectionalComponent.Placement;
+import net.malisis.core.block.component.PowerComponent;
+import net.malisis.core.block.component.PowerComponent.Type;
 import net.malisis.core.renderer.DefaultRenderer;
 import net.malisis.core.renderer.MalisisRendered;
 import net.malisis.core.renderer.icon.MalisisIcon;
@@ -37,12 +40,8 @@ import net.malisis.switches.tileentity.SwitchTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -59,10 +58,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  */
 @MalisisRendered(block = DefaultRenderer.Block.class, item = DefaultRenderer.Item.class)
-public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockDirectional
+public class Switch extends MalisisBlock implements ITileEntityProvider
 {
-	public static PropertyBool POWERED = PropertyBool.create("POWER");
-
 	public Switch(String name)
 	{
 		super(Material.iron);
@@ -70,19 +67,8 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 		setHardness(1.0F);
 		setName(name);
 
-		setDefaultState(getDefaultState().withProperty(POWERED, false));
-	}
-
-	@Override
-	public PropertyDirection getPropertyDirection()
-	{
-		return ALL;
-	}
-
-	@Override
-	protected BlockState createBlockState()
-	{
-		return new BlockState(this, ALL, POWERED);
+		addComponent(new DirectionalComponent(DirectionalComponent.ALL, Placement.BLOCKSIDE));
+		addComponent(new PowerComponent(Type.RIGHT_CLICK));
 	}
 
 	@Override
@@ -93,22 +79,15 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 	}
 
 	@Override
-	public EnumFacing getPlacingDirection(EnumFacing side, EntityLivingBase placer)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		return side;
-	}
-
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
-	{
-		boolean powered = !isPowered(state);
-		world.setBlockState(pos, state.withProperty(POWERED, powered));
+		super.onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
 		world.notifyNeighborsOfStateChange(pos, this);
-		world.notifyNeighborsOfStateChange(pos.offset(IBlockDirectional.getDirection(state).getOpposite()), this);
+		world.notifyNeighborsOfStateChange(pos.offset(DirectionalComponent.getDirection(state).getOpposite()), this);
 
 		SwitchTileEntity te = TileEntityUtils.getTileEntity(SwitchTileEntity.class, world, pos);
 		if (te != null)
-			te.setPower(powered ? 15 : 0);
+			te.setPower(PowerComponent.isPowered(world, pos) ? 15 : 0); //use world,pos to get the updated state
 		return true;
 	}
 
@@ -118,7 +97,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 		if (type == BoundingBoxType.COLLISION)
 			return null;
 
-		EnumFacing direction = IBlockDirectional.getDirection(world, pos);
+		EnumFacing direction = DirectionalComponent.getDirection(world, pos);
 		if (direction == EnumFacing.DOWN)
 			return new AxisAlignedBB(0.25F, 0.99F, 0.25F, 0.75F, 1F, 0.75F);
 		else if (direction == EnumFacing.UP)
@@ -146,7 +125,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 	@Override
 	public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block neighborBlock)
 	{
-		EnumFacing dir = IBlockDirectional.getDirection(state);
+		EnumFacing dir = DirectionalComponent.getDirection(state);
 		if (world.isSideSolid(pos.offset(dir.getOpposite()), dir, true))
 			return;
 		this.dropBlockAsItem(world, pos, state, 0);
@@ -156,7 +135,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 	@Override
 	public int isProvidingStrongPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side)
 	{
-		return isPowered(state) && IBlockDirectional.getDirection(state) == side ? 15 : 0;
+		return PowerComponent.isPowered(state) && DirectionalComponent.getDirection(state) == side ? 15 : 0;
 	}
 
 	@Override
@@ -169,18 +148,6 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 	public TileEntity createNewTileEntity(World worldIn, int meta)
 	{
 		return new SwitchTileEntity();
-	}
-
-	@Override
-	public int getMetaFromState(Block block, IBlockState state)
-	{
-		return IBlockDirectional.super.getMetaFromState(block, state);
-	}
-
-	@Override
-	public int getMetaFromState(IBlockState state)
-	{
-		return super.getMetaFromState(state) + (isPowered(state) ? (1 << 3) : 0);
 	}
 
 	@Override
@@ -215,16 +182,6 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 		return layer == EnumWorldBlockLayer.CUTOUT_MIPPED;
 	}
 
-	public boolean isPowered(World world, BlockPos pos)
-	{
-		return isPowered(world.getBlockState(pos));
-	}
-
-	public boolean isPowered(IBlockState state)
-	{
-		return state.getBlock() == this && (boolean) state.getValue(POWERED);
-	}
-
 	public static class SwitchIconProvider implements IBlockIconProvider
 	{
 		private MalisisIcon switchOn;
@@ -252,7 +209,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider, IBlockD
 		@Override
 		public MalisisIcon getIcon(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side)
 		{
-			return ((Switch) state.getBlock()).isPowered(state) || side != IBlockDirectional.getDirection(state) ? switchOn : switchOff;
+			return PowerComponent.isPowered(state) ? switchOn : switchOff;
 		}
 	}
 }
