@@ -75,7 +75,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	@SideOnly(Side.CLIENT)
 	public void createIconProvider(Object object)
 	{
-		iconProvider = new SwitchIconProvider(getRegistryName());
+		iconProvider = new SwitchIconProvider(getName());
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public int isProvidingStrongPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side)
+	public int getStrongPower(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side)
 	{
 		return PowerComponent.isPowered(state) && DirectionalComponent.getDirection(state) == side ? 15 : 0;
 	}

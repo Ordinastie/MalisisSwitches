@@ -75,7 +75,7 @@ public class PowerManager
 		if (state.getBlock().shouldCheckWeakPower(world, pos, side))
 			blockPower = world.getStrongPower(pos);
 		else
-			blockPower = state.getBlock().isProvidingWeakPower(world, pos, state, side);
+			blockPower = state.getBlock().getWeakPower(world, pos, state, side);
 
 		return Math.max(power, blockPower);
 	}
