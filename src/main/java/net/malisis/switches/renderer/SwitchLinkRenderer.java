@@ -57,7 +57,7 @@ import org.lwjgl.opengl.GL11;
  * @author Ordinastie
  *
  */
-public class SwitchLinkRenderer extends MalisisRenderer implements IIconRegister
+public class SwitchLinkRenderer extends MalisisRenderer<SwitchTileEntity> implements IIconRegister
 {
 
 	private BlockPos linkedPos;
@@ -87,9 +87,6 @@ public class SwitchLinkRenderer extends MalisisRenderer implements IIconRegister
 	@Override
 	public void render()
 	{
-		if (!(tileEntity instanceof SwitchTileEntity))
-			return;
-
 		if (!EntityUtils.isEquipped(Minecraft.getMinecraft().thePlayer, MalisisSwitches.Items.powerLinker))
 			return;
 
@@ -99,7 +96,7 @@ public class SwitchLinkRenderer extends MalisisRenderer implements IIconRegister
 		startPoint.y -= 0.5F * side.getFrontOffsetY();
 		startPoint.z -= 0.5F * side.getFrontOffsetZ();
 		int powerColor = PowerComponent.isPowered(blockState) ? 0x339933 : 0x990000;
-		Set<BlockPos> linkedPositions = ((SwitchTileEntity) tileEntity).linkedPositions();
+		Set<BlockPos> linkedPositions = tileEntity.linkedPositions();
 
 		//DRAWING LINES
 
