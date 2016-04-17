@@ -26,8 +26,8 @@ package net.malisis.switches;
 
 import net.malisis.core.util.blockdata.BlockDataHandler;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -72,10 +72,10 @@ public class PowerManager
 		int blockPower = 0;
 
 		IBlockState state = world.getBlockState(pos);
-		if (state.getBlock().shouldCheckWeakPower(world, pos, side))
+		if (state.getBlock().shouldCheckWeakPower(state, world, pos, side))
 			blockPower = world.getStrongPower(pos);
 		else
-			blockPower = state.getBlock().getWeakPower(world, pos, state, side);
+			blockPower = state.getWeakPower(world, pos, side);
 
 		return Math.max(power, blockPower);
 	}

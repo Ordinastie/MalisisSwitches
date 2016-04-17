@@ -29,14 +29,18 @@ import net.malisis.core.item.MalisisItem;
 import net.malisis.core.util.TileEntityUtils;
 import net.malisis.switches.MalisisSwitches;
 import net.malisis.switches.block.Switch;
+import net.malisis.switches.network.PowerLinkerMessage;
 import net.malisis.switches.tileentity.SwitchTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
@@ -61,7 +65,17 @@ public class PowerLinker extends MalisisItem
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
+	{
+		if (hand == EnumHand.OFF_HAND)
+			return EnumActionResult.PASS;
+
+		processClick(itemStack, player, world, pos, side);
+		PowerLinkerMessage.sendClick(pos, side);
+		return EnumActionResult.SUCCESS;
+	}
+
+	public void processClick(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side)
 	{
 		if (!isStartSet(itemStack))
 		{
@@ -70,16 +84,16 @@ public class PowerLinker extends MalisisItem
 				setStartPosition(itemStack, pos, world.getTotalWorldTime());
 			else if (world.isRemote)
 				MalisisCore.message("No switch selected.");
-			return !world.isRemote;
+			return;
 		}
 
 		BlockPos start = getStartPosition(itemStack);
 		if (start.equals(pos))
-			return !world.isRemote;
+			return;
 
 		SwitchTileEntity te = TileEntityUtils.getTileEntity(SwitchTileEntity.class, world, start);
 		if (te == null)
-			return !world.isRemote;
+			return;
 
 		if (!player.isSneaking())
 			te.linkPosition(pos);
@@ -89,16 +103,16 @@ public class PowerLinker extends MalisisItem
 				te.unlinkPosition(pos.offset(side));
 		}
 		//clearStartPosition(itemStack);
-		return !world.isRemote;
+		return;
 	}
 
 	@Override
 	public void onUpdate(ItemStack itemStack, World world, Entity entity, int p_77663_4_, boolean p_77663_5_)
 	{
-		if (world.isRemote || !isStartSet(itemStack))
+		if (!isStartSet(itemStack))
 			return;
 
-		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).getHeldItem() != itemStack)
+		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).getHeldItem(EnumHand.MAIN_HAND) != itemStack)
 			clearStartPosition(itemStack);
 	}
 
@@ -125,7 +139,7 @@ public class PowerLinker extends MalisisItem
 	}
 
 	@Override
-	public boolean doesSneakBypassUse(World world, BlockPos pos, EntityPlayer player)
+	public boolean doesSneakBypassUse(ItemStack stack, IBlockAccess world, BlockPos pos, EntityPlayer player)
 	{
 		return false;
 	}

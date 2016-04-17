@@ -48,11 +48,11 @@ public class Registers
 	{
 		greenStone = new GreenStone();
 		greenStone.register();
-		GameRegistry.addRecipe(new ItemStack(greenStone, 8), "AAA", "ABA", "AAA", 'A', Items.redstone, 'B', Items.emerald);
+		GameRegistry.addRecipe(new ItemStack(greenStone, 8), "AAA", "ABA", "AAA", 'A', Items.REDSTONE, 'B', Items.EMERALD);
 
 		powerLinker = new PowerLinker();
 		powerLinker.register();
-		GameRegistry.addRecipe(new ItemStack(powerLinker), "AB", "BA", " A", 'A', Items.iron_ingot, 'B', greenStone);
+		GameRegistry.addRecipe(new ItemStack(powerLinker), "AB", "BA", " A", 'A', Items.IRON_INGOT, 'B', greenStone);
 	}
 
 	private static void registerSwitches()
@@ -60,8 +60,8 @@ public class Registers
 		basicSwitch1 = new Switch("basicSwitch1");
 		basicSwitch1.register();
 
-		GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), new ItemStack(Blocks.lever), new ItemStack(greenStone), new ItemStack(
-				Items.redstone));
+		GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), new ItemStack(Blocks.LEVER), new ItemStack(greenStone), new ItemStack(
+				Items.REDSTONE));
 
 		GameRegistry.registerTileEntity(SwitchTileEntity.class, "switchTileEntity");
 	}

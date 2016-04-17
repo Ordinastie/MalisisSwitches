@@ -26,7 +26,6 @@ package net.malisis.switches.renderer;
 
 import java.util.Set;
 
-import net.malisis.core.MalisisRegistry;
 import net.malisis.core.block.component.DirectionalComponent;
 import net.malisis.core.block.component.PowerComponent;
 import net.malisis.core.renderer.MalisisRenderer;
@@ -35,8 +34,7 @@ import net.malisis.core.renderer.element.Face;
 import net.malisis.core.renderer.element.Shape;
 import net.malisis.core.renderer.element.Vertex;
 import net.malisis.core.renderer.element.shape.Cube;
-import net.malisis.core.renderer.icon.IIconRegister;
-import net.malisis.core.renderer.icon.MalisisIcon;
+import net.malisis.core.renderer.icon.Icon;
 import net.malisis.core.util.AABBUtils;
 import net.malisis.core.util.EntityUtils;
 import net.malisis.core.util.Point;
@@ -45,10 +43,10 @@ import net.malisis.switches.MalisisSwitches;
 import net.malisis.switches.tileentity.SwitchTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
@@ -57,37 +55,33 @@ import org.lwjgl.opengl.GL11;
  * @author Ordinastie
  *
  */
-public class SwitchLinkRenderer extends MalisisRenderer<SwitchTileEntity> implements IIconRegister
+public class SwitchLinkRenderer extends MalisisRenderer<SwitchTileEntity>
 {
 
 	private BlockPos linkedPos;
 	private Pair<EnumFacing, Point> closest;
-	private MalisisIcon linkedPosIcon = new MalisisIcon(MalisisSwitches.modid + ":blocks/linked_pos");
-	private MalisisIcon linkedPosPointerIcon = new MalisisIcon(MalisisSwitches.modid + ":blocks/linked_pos_pointer");
+	private Icon linkedPosIcon = Icon.from(MalisisSwitches.modid + ":blocks/linked_pos");
+	private Icon linkedPosPointerIcon = Icon.from(MalisisSwitches.modid + ":blocks/linked_pos_pointer");
 	private Shape linkedPosCube = new Cube();
 	private RenderParameters rp = new RenderParameters();
 
 	public SwitchLinkRenderer()
 	{
 		registerFor(SwitchTileEntity.class);
-		MalisisRegistry.registerIconRegister(this);
+	}
 
+	@Override
+	protected void initialize()
+	{
 		rp.useEnvironmentBrightness.set(false);
 		rp.brightness.set(Vertex.BRIGHTNESS_MAX);
 		rp.interpolateUV.set(false);
 	}
 
 	@Override
-	public void registerIcons(TextureMap textureMap)
-	{
-		linkedPosIcon = linkedPosIcon.register(textureMap);
-		linkedPosPointerIcon = linkedPosPointerIcon.register(textureMap);
-	}
-
-	@Override
 	public void render()
 	{
-		if (!EntityUtils.isEquipped(Minecraft.getMinecraft().thePlayer, MalisisSwitches.Items.powerLinker))
+		if (!EntityUtils.isEquipped(Minecraft.getMinecraft().thePlayer, MalisisSwitches.Items.powerLinker, EnumHand.MAIN_HAND))
 			return;
 
 		Point startPoint = posToPoint(pos);

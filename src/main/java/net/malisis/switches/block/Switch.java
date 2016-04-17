@@ -24,6 +24,7 @@
 
 package net.malisis.switches.block;
 
+import net.malisis.core.MalisisCore;
 import net.malisis.core.block.BoundingBoxType;
 import net.malisis.core.block.MalisisBlock;
 import net.malisis.core.block.component.DirectionalComponent;
@@ -32,8 +33,7 @@ import net.malisis.core.block.component.PowerComponent;
 import net.malisis.core.block.component.PowerComponent.Type;
 import net.malisis.core.renderer.DefaultRenderer;
 import net.malisis.core.renderer.MalisisRendered;
-import net.malisis.core.renderer.icon.MalisisIcon;
-import net.malisis.core.renderer.icon.provider.IBlockIconProvider;
+import net.malisis.core.renderer.icon.provider.IIconProvider;
 import net.malisis.core.util.TileEntityUtils;
 import net.malisis.switches.MalisisSwitches;
 import net.malisis.switches.tileentity.SwitchTileEntity;
@@ -41,17 +41,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author Ordinastie
@@ -62,26 +61,27 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 {
 	public Switch(String name)
 	{
-		super(Material.iron);
+		super(Material.IRON);
 		setCreativeTab(MalisisSwitches.tab);
 		setHardness(1.0F);
 		setName(name);
 
 		addComponent(new DirectionalComponent(DirectionalComponent.ALL, Placement.BLOCKSIDE));
 		addComponent(new PowerComponent(Type.RIGHT_CLICK));
+
+		if (MalisisCore.isClient())
+		{
+			addComponent(IIconProvider.create(MalisisSwitches.modid + ":blocks/", name + "_on")
+										.forProperty(PowerComponent.POWER)
+										.withValue(false, name + "_off")
+										.build());
+		}
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void createIconProvider(Object object)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		iconProvider = new SwitchIconProvider(getName());
-	}
-
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ)
-	{
-		super.onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
+		super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
 		world.notifyNeighborsOfStateChange(pos, this);
 		world.notifyNeighborsOfStateChange(pos.offset(DirectionalComponent.getDirection(state).getOpposite()), this);
 
@@ -92,7 +92,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockAccess world, BlockPos pos, BoundingBoxType type)
+	public AxisAlignedBB getBoundingBox(IBlockAccess world, BlockPos pos, IBlockState state, BoundingBoxType type)
 	{
 		if (type == BoundingBoxType.COLLISION)
 			return null;
@@ -133,13 +133,13 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public int getStrongPower(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side)
+	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
 	{
 		return PowerComponent.isPowered(state) && DirectionalComponent.getDirection(state) == side ? 15 : 0;
 	}
 
 	@Override
-	public boolean canProvidePower()
+	public boolean canProvidePower(IBlockState state)
 	{
 		return true;
 	}
@@ -151,19 +151,19 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public boolean isNormalCube()
+	public boolean isNormalCube(IBlockState state)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean isOpaqueCube()
+	public boolean isOpaqueCube(IBlockState state)
 	{
 		return false;
 	}
 
 	@Override
-	public boolean isFullCube()
+	public boolean isFullCube(IBlockState state)
 	{
 		return false;
 	}
@@ -177,39 +177,39 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public boolean canRenderInLayer(EnumWorldBlockLayer layer)
+	public boolean canRenderInLayer(BlockRenderLayer layer)
 	{
-		return layer == EnumWorldBlockLayer.CUTOUT_MIPPED;
+		return layer == BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
-	public static class SwitchIconProvider implements IBlockIconProvider
-	{
-		private MalisisIcon switchOn;
-		private MalisisIcon switchOff;
-
-		public SwitchIconProvider(String name)
-		{
-			switchOn = new MalisisIcon(MalisisSwitches.modid + ":blocks/" + name + "_on");
-			switchOff = new MalisisIcon(MalisisSwitches.modid + ":blocks/" + name + "_off");
-		}
-
-		@Override
-		public void registerIcons(TextureMap textureMap)
-		{
-			switchOn = switchOn.register(textureMap);
-			switchOff = switchOff.register(textureMap);
-		}
-
-		@Override
-		public MalisisIcon getIcon()
-		{
-			return switchOn;
-		}
-
-		@Override
-		public MalisisIcon getIcon(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side)
-		{
-			return PowerComponent.isPowered(state) ? switchOn : switchOff;
-		}
-	}
+	//	public static class SwitchIconProvider implements IBlockIconProvider
+	//	{
+	//		private Icon switchOn;
+	//		private Icon switchOff;
+	//
+	//		public SwitchIconProvider(String name)
+	//		{
+	//			switchOn = new Icon(MalisisSwitches.modid + ":blocks/" + name + "_on");
+	//			switchOff = new Icon(MalisisSwitches.modid + ":blocks/" + name + "_off");
+	//		}
+	//
+	//		@Override
+	//		public void registerIcons(TextureMap textureMap)
+	//		{
+	//			switchOn = switchOn.register(textureMap);
+	//			switchOff = switchOff.register(textureMap);
+	//		}
+	//
+	//		@Override
+	//		public Icon getIcon()
+	//		{
+	//			return switchOn;
+	//		}
+	//
+	//		@Override
+	//		public Icon getIcon(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side)
+	//		{
+	//			return PowerComponent.isPowered(state) ? switchOn : switchOff;
+	//		}
+	//	}
 }

@@ -49,7 +49,7 @@ public class MalisisSwitchesTransformer extends MalisisClassTransformer
 	private AsmHook getRedstonePower()
 	{
 		McpMethodMapping getRedstonePower = new McpMethodMapping("getRedstonePower", "func_175651_c", "net.minecraft.world.World",
-				"(Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)I");
+				"(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I");
 
 		AsmHook ah = new AsmHook(getRedstonePower);
 
@@ -64,7 +64,7 @@ public class MalisisSwitchesTransformer extends MalisisClassTransformer
 		insert.add(new VarInsnNode(ALOAD, 1));
 		insert.add(new VarInsnNode(ALOAD, 2));
 		insert.add(new MethodInsnNode(INVOKESTATIC, "net/malisis/switches/PowerManager", "getRedstonePower",
-				"(Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;)I", false));
+				"(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I", false));
 		insert.add(new InsnNode(IRETURN));
 
 		ah.insert(insert);
