@@ -123,7 +123,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block neighborBlock)
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock)
 	{
 		EnumFacing dir = DirectionalComponent.getDirection(state);
 		if (world.isSideSolid(pos.offset(dir.getOpposite()), dir, true))

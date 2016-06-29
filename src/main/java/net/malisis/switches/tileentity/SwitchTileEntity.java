@@ -33,8 +33,6 @@ import net.malisis.switches.PowerManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -84,13 +82,14 @@ public class SwitchTileEntity extends TileEntity
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tag)
+	public NBTTagCompound writeToNBT(NBTTagCompound tag)
 	{
 		super.writeToNBT(tag);
 		ByteBuf bytes = Unpooled.buffer(linkedPos.size() * 8);
 		for (BlockPos pos : linkedPos)
 			bytes.writeLong(pos.toLong());
 		tag.setByteArray("linkedPos", bytes.array());
+		return tag;
 	}
 
 	@Override
@@ -103,7 +102,7 @@ public class SwitchTileEntity extends TileEntity
 	}
 
 	@Override
-	public Packet<INetHandlerPlayClient> getDescriptionPacket()
+	public SPacketUpdateTileEntity getUpdatePacket()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		this.writeToNBT(nbt);
