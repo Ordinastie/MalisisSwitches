@@ -24,7 +24,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = "1.8-0.5"
+version = "1.8-0.5.1"
 group = "net.malisis" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "malisisswitches"
 libsDirName = "../releases"
@@ -76,7 +76,9 @@ def commonManifest = {
 						"Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
 						"Implementation-Title": name,
 						"Implementation-Version": version,
-						"Implementation-Vendor": url)
+						"Implementation-Vendor": url,
+						"FMLCorePlugin": "net.malisis.switches.asm.MalisisSwitchesPlugin",
+						"FMLCorePluginContainsFMLMod": true)
 }
 jar.manifest commonManifest
 
