@@ -29,6 +29,7 @@ import net.malisis.core.MalisisCore;
 import net.malisis.core.configuration.Settings;
 import net.malisis.core.item.MalisisItem;
 import net.malisis.core.network.MalisisNetwork;
+import net.malisis.switches.block.Relay;
 import net.malisis.switches.block.Switch;
 import net.malisis.switches.item.PowerLinker;
 import net.malisis.switches.renderer.SwitchLinkRenderer;
@@ -104,6 +105,8 @@ public class MalisisSwitches implements IMalisisMod
 	public static class Blocks
 	{
 		public static Switch basicSwitch1;
+		public static Switch lightSwitch1;
+		public static Relay relay;
 	}
 
 	public static class Items

@@ -26,10 +26,11 @@ package net.malisis.switches;
 
 import static net.malisis.switches.MalisisSwitches.Blocks.*;
 import static net.malisis.switches.MalisisSwitches.Items.*;
+import net.malisis.switches.block.Relay;
 import net.malisis.switches.block.Switch;
 import net.malisis.switches.item.GreenStone;
 import net.malisis.switches.item.PowerLinker;
-import net.malisis.switches.tileentity.SwitchTileEntity;
+import net.malisis.switches.tileentity.LinkedPowerTileEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,10 @@ public class Registers
 		registerItems();
 
 		registerSwitches();
+
+		registerRelay();
+
+		GameRegistry.registerTileEntityWithAlternatives(LinkedPowerTileEntity.class, "linkedPowerTileEntity", "switchTileEntity");
 	}
 
 	private static void registerItems()
@@ -57,12 +62,26 @@ public class Registers
 
 	private static void registerSwitches()
 	{
-		basicSwitch1 = new Switch("basicSwitch1");
+		ItemStack lever = new ItemStack(Blocks.LEVER);
+		ItemStack green = new ItemStack(greenStone);
+		ItemStack red = new ItemStack(Items.REDSTONE);
+
+		basicSwitch1 = new Switch("basicSwitch1", 0.5F, 0.5F);
 		basicSwitch1.register();
+		GameRegistry.addShapedRecipe(new ItemStack(basicSwitch1), "ABC", "   ", "   ", 'A', lever, 'B', green, 'C', red);
 
-		GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), new ItemStack(Blocks.LEVER), new ItemStack(greenStone), new ItemStack(
-				Items.REDSTONE));
+		lightSwitch1 = new Switch("lightSwitch1", 0.3F, 0.5F);
+		lightSwitch1.register();
+		GameRegistry.addShapedRecipe(new ItemStack(lightSwitch1), "ACB", "   ", "   ", 'A', lever, 'B', green, 'C', red);
 
-		GameRegistry.registerTileEntity(SwitchTileEntity.class, "switchTileEntity");
+	}
+
+	private static void registerRelay()
+	{
+		relay = new Relay();
+		relay.register();
+
+		GameRegistry.addShapedRecipe(new ItemStack(relay), "ABA", "BCB", "ABA", 'A', new ItemStack(greenStone), 'B', new ItemStack(
+				Items.REDSTONE), 'C', new ItemStack(Items.REPEATER));
 	}
 }

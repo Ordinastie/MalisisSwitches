@@ -27,11 +27,10 @@ package net.malisis.switches.item;
 import net.malisis.core.MalisisCore;
 import net.malisis.core.item.MalisisItem;
 import net.malisis.core.util.TileEntityUtils;
+import net.malisis.switches.ILinkedPower;
 import net.malisis.switches.MalisisSwitches;
-import net.malisis.switches.block.Switch;
 import net.malisis.switches.network.PowerLinkerMessage;
-import net.malisis.switches.tileentity.SwitchTileEntity;
-import net.minecraft.block.state.IBlockState;
+import net.malisis.switches.tileentity.LinkedPowerTileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -79,8 +78,8 @@ public class PowerLinker extends MalisisItem
 	{
 		if (!isStartSet(itemStack))
 		{
-			IBlockState state = world.getBlockState(pos);
-			if (state.getBlock() instanceof Switch)
+			ILinkedPower lp = TileEntityUtils.getTileEntity(ILinkedPower.class, world, pos);
+			if (lp != null)
 				setStartPosition(itemStack, pos, world.getTotalWorldTime());
 			else if (world.isRemote)
 				MalisisCore.message("No switch selected.");
@@ -91,7 +90,7 @@ public class PowerLinker extends MalisisItem
 		if (start.equals(pos))
 			return;
 
-		SwitchTileEntity te = TileEntityUtils.getTileEntity(SwitchTileEntity.class, world, start);
+		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, start);
 		if (te == null)
 			return;
 

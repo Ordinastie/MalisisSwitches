@@ -29,7 +29,7 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Set;
 
-import net.malisis.switches.PowerManager;
+import net.malisis.switches.ILinkedPower;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -45,40 +45,13 @@ import com.google.common.collect.Sets;
  * @author Ordinastie
  *
  */
-public class SwitchTileEntity extends TileEntity
+public class LinkedPowerTileEntity extends TileEntity implements ILinkedPower
 {
 	Set<BlockPos> linkedPos = Sets.newHashSet();
 
 	public Set<BlockPos> linkedPositions()
 	{
 		return linkedPos;
-	}
-
-	public void linkPosition(BlockPos pos)
-	{
-		linkedPos.add(pos);
-	}
-
-	public boolean unlinkPosition(BlockPos pos)
-	{
-		if (!linkedPos.remove(pos))
-			return false;
-
-		PowerManager.setPower(getWorld(), pos, 0);
-		getWorld().notifyBlockOfStateChange(pos, getBlockType());
-		getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
-
-		return true;
-	}
-
-	public void setPower(int power)
-	{
-		for (BlockPos pos : linkedPos)
-		{
-			PowerManager.setPower(getWorld(), pos, power);
-			getWorld().notifyBlockOfStateChange(pos, getBlockType());
-			getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
-		}
 	}
 
 	@Override
@@ -132,4 +105,5 @@ public class SwitchTileEntity extends TileEntity
 	{
 		return INFINITE_EXTENT_AABB;
 	}
+
 }

@@ -1,6 +1,8 @@
 itemGroup.malisisswitches=Malisis Switches
 
 tile.basicSwitch1.name=Interrupteur
+tile.lightSwitch1.name=Interrupeur
+tile.relay.name=Relai
 
 item.powerLinker.name=Connecteur
 item.greenstone_dust=Greenstone

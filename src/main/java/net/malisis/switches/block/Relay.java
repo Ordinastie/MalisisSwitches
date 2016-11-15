@@ -31,9 +31,8 @@ import net.malisis.core.block.component.DirectionalComponent;
 import net.malisis.core.block.component.DirectionalComponent.IPlacement;
 import net.malisis.core.block.component.PowerComponent;
 import net.malisis.core.block.component.PowerComponent.Type;
-import net.malisis.core.renderer.DefaultRenderer;
-import net.malisis.core.renderer.MalisisRendered;
-import net.malisis.core.renderer.icon.provider.IIconProvider;
+import net.malisis.core.renderer.icon.Icon;
+import net.malisis.core.renderer.icon.provider.IBlockIconProvider;
 import net.malisis.core.util.TileEntityUtils;
 import net.malisis.switches.MalisisSwitches;
 import net.malisis.switches.tileentity.LinkedPowerTileEntity;
@@ -41,86 +40,85 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author Ordinastie
  *
  */
-@MalisisRendered(block = DefaultRenderer.Block.class, item = DefaultRenderer.Item.class)
-public class Switch extends MalisisBlock implements ITileEntityProvider
+public class Relay extends MalisisBlock implements ITileEntityProvider
 {
-	private AxisAlignedBB aabb;
+	@SideOnly(Side.CLIENT)
+	private Icon relaySide;
+	@SideOnly(Side.CLIENT)
+	private Icon relayOff;
+	@SideOnly(Side.CLIENT)
+	private Icon relayOn;
 
-	public Switch(String name, float width, float height, float depth)
+	public Relay()
 	{
-		super(Material.IRON);
+		super(Material.CIRCUITS);
+
 		setCreativeTab(MalisisSwitches.tab);
 		setHardness(1.0F);
-		setName(name);
-
-		this.aabb = new AxisAlignedBB(0.5F - width / 2, 0.5F - height / 2, 0, 0.5F + width / 2, 0.5F + height / 2, depth);
+		setName("relay");
 
 		addComponent(new DirectionalComponent(DirectionalComponent.ALL, IPlacement.BLOCKSIDE));
-		addComponent(new PowerComponent(Type.RIGHT_CLICK));
+		addComponent(new PowerComponent(Type.REDSTONE));
 
 		if (MalisisCore.isClient())
 		{
-			addComponent(IIconProvider.create(MalisisSwitches.modid + ":blocks/", name + "_on")
-										.forProperty(PowerComponent.POWER)
-										.withValue(false, name + "_off")
-										.build());
+			loadIcons();
+			addComponent((IBlockIconProvider) this::getIcon);
 		}
 	}
 
-	public Switch(String name, float width, float height)
+	@SideOnly(Side.CLIENT)
+	private void loadIcons()
 	{
-		this(name, width, height, 0.01F);
+		relaySide = Icon.from(MalisisSwitches.modid + ":blocks/relay_side");
+		relayOff = Icon.from(MalisisSwitches.modid + ":blocks/relay_off");
+		relayOn = Icon.from(MalisisSwitches.modid + ":blocks/relay_on");
 	}
 
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+	@SideOnly(Side.CLIENT)
+	public Icon getIcon(IBlockState state, EnumFacing facing)
 	{
-		super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
-
-		world.notifyNeighborsOfStateChange(pos, this);
-		world.notifyNeighborsOfStateChange(pos.offset(DirectionalComponent.getDirection(state).getOpposite()), this);
-
-		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
-		if (te != null)
-			te.setPower(PowerComponent.isPowered(world, pos) ? 15 : 0); //use world,pos to get the updated state
-		return true;
+		return facing == EnumFacing.SOUTH || facing == null ? PowerComponent.isPowered(state) ? relayOn : relayOff : relaySide;
 	}
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockAccess world, BlockPos pos, IBlockState state, BoundingBoxType type)
 	{
-		if (type == BoundingBoxType.COLLISION)
-			return null;
+		return new AxisAlignedBB(0, 0, 0, 1, 1, 0.125F);
+	}
 
-		return aabb;
+	@Override
+	public IBlockState getStateFromItemStack(ItemStack itemStack)
+	{
+		return getDefaultState();
 	}
 
 	@Override
 	public boolean canPlaceBlockOnSide(World world, BlockPos pos, EnumFacing side)
 	{
-		return world.isSideSolid(pos.offset(side.getOpposite()), side, true);
+		side = side.getOpposite();
+		return world.isSideSolid(pos.offset(side), side);
 	}
 
 	@Override
 	public boolean canPlaceBlockAt(World world, BlockPos pos)
 	{
-		for (EnumFacing side : EnumFacing.VALUES)
-			if (world.isSideSolid(pos.offset(side), side.getOpposite(), true))
+		for (EnumFacing side : EnumFacing.values())
+			if (world.isSideSolid(pos.offset(side), side))
 				return true;
 
 		return false;
@@ -129,41 +127,25 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	@Override
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock)
 	{
-		EnumFacing dir = DirectionalComponent.getDirection(state);
-		if (world.isSideSolid(pos.offset(dir.getOpposite()), dir, true))
-			return;
-		this.dropBlockAsItem(world, pos, state, 0);
-		world.setBlockToAir(pos);
-	}
+		super.neighborChanged(state, world, pos, neighborBlock);
 
-	@Override
-	public int getStrongPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-	{
-		return PowerComponent.isPowered(state) && DirectionalComponent.getDirection(state) == side ? 15 : 0;
+		EnumFacing dir = DirectionalComponent.getDirection(world, pos).getOpposite();
+		if (!world.isSideSolid(pos.offset(dir), dir))
+		{
+			dropBlockAsItem(world, pos, getDefaultState(), 0);
+			world.setBlockToAir(pos);
+			return;
+		}
+
+		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
+		if (te != null)
+			te.setPower(PowerComponent.isPowered(world, pos) ? 15 : 0); //use world,pos to get the updated state
 	}
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta)
 	{
 		return new LinkedPowerTileEntity();
-	}
-
-	@Override
-	public boolean isNormalCube(IBlockState state)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean isOpaqueCube(IBlockState state)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean isFullCube(IBlockState state)
-	{
-		return false;
 	}
 
 	@Override
@@ -175,8 +157,20 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public boolean canRenderInLayer(BlockRenderLayer layer)
+	public boolean isFullCube(IBlockState state)
 	{
-		return layer == BlockRenderLayer.CUTOUT_MIPPED;
+		return false;
+	}
+
+	@Override
+	public boolean isFullBlock(IBlockState state)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube(IBlockState state)
+	{
+		return false;
 	}
 }

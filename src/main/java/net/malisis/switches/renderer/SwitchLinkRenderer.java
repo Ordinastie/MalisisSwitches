@@ -40,7 +40,7 @@ import net.malisis.core.util.EntityUtils;
 import net.malisis.core.util.Point;
 import net.malisis.core.util.raytrace.Raytrace;
 import net.malisis.switches.MalisisSwitches;
-import net.malisis.switches.tileentity.SwitchTileEntity;
+import net.malisis.switches.tileentity.LinkedPowerTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
@@ -55,7 +55,7 @@ import org.lwjgl.opengl.GL11;
  * @author Ordinastie
  *
  */
-public class SwitchLinkRenderer extends MalisisRenderer<SwitchTileEntity>
+public class SwitchLinkRenderer extends MalisisRenderer<LinkedPowerTileEntity>
 {
 
 	private BlockPos linkedPos;
@@ -67,7 +67,7 @@ public class SwitchLinkRenderer extends MalisisRenderer<SwitchTileEntity>
 
 	public SwitchLinkRenderer()
 	{
-		registerFor(SwitchTileEntity.class);
+		registerFor(LinkedPowerTileEntity.class);
 	}
 
 	@Override
