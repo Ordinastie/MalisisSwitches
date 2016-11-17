@@ -57,7 +57,7 @@ public class Registers
 
 		powerLinker = new PowerLinker();
 		powerLinker.register();
-		GameRegistry.addRecipe(new ItemStack(powerLinker), "AB", "BA", " A", 'A', Items.IRON_INGOT, 'B', greenStone);
+		GameRegistry.addRecipe(new ItemStack(powerLinker), "AB ", "BA ", "  A", 'A', Items.IRON_INGOT, 'B', greenStone);
 	}
 
 	private static void registerSwitches()
