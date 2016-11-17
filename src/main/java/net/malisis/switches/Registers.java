@@ -68,11 +68,11 @@ public class Registers
 
 		basicSwitch1 = new Switch("basicSwitch1", 0.5F, 0.5F);
 		basicSwitch1.register();
-		GameRegistry.addShapedRecipe(new ItemStack(basicSwitch1), "ABC", "   ", "   ", 'A', lever, 'B', green, 'C', red);
+		GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), lever, green, red, new ItemStack(Items.IRON_INGOT));
 
 		lightSwitch1 = new Switch("lightSwitch1", 0.3F, 0.5F);
 		lightSwitch1.register();
-		GameRegistry.addShapedRecipe(new ItemStack(lightSwitch1), "ACB", "   ", "   ", 'A', lever, 'B', green, 'C', red);
+		GameRegistry.addShapelessRecipe(new ItemStack(lightSwitch1), lever, green, red, new ItemStack(Blocks.QUARTZ_BLOCK));
 
 	}
 
