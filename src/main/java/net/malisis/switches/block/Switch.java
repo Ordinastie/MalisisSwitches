@@ -76,7 +76,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 		if (MalisisCore.isClient())
 		{
 			addComponent(IIconProvider.create(MalisisSwitches.modid + ":blocks/", name + "_on")
-										.forProperty(PowerComponent.POWER)
+										.forProperty(PowerComponent.getProperty(this))
 										.withValue(false, name + "_off")
 										.build());
 		}
@@ -129,6 +129,8 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	@Override
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock)
 	{
+		super.neighborChanged(state, world, pos, neighborBlock);
+
 		EnumFacing dir = DirectionalComponent.getDirection(state);
 		if (world.isSideSolid(pos.offset(dir.getOpposite()), dir, true))
 			return;
@@ -169,6 +171,12 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state)
 	{
+		if (PowerComponent.isPowered(state))
+		{
+			world.notifyNeighborsOfStateChange(pos, this);
+			world.notifyNeighborsOfStateChange(pos.offset(DirectionalComponent.getDirection(state).getOpposite()), this);
+		}
+
 		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
 		if (te != null)
 			te.setPower(0);

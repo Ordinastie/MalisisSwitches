@@ -137,6 +137,7 @@ public class Relay extends MalisisBlock implements ITileEntityProvider
 			return;
 		}
 
+		//redstone check
 		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
 		if (te != null)
 			te.setPower(PowerComponent.isPowered(world, pos) ? 15 : 0); //use world,pos to get the updated state

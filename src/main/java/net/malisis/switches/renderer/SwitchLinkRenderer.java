@@ -38,10 +38,10 @@ import net.malisis.core.renderer.icon.Icon;
 import net.malisis.core.util.AABBUtils;
 import net.malisis.core.util.EntityUtils;
 import net.malisis.core.util.Point;
+import net.malisis.core.util.Utils;
 import net.malisis.core.util.raytrace.Raytrace;
 import net.malisis.switches.MalisisSwitches;
 import net.malisis.switches.tileentity.LinkedPowerTileEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
@@ -81,7 +81,7 @@ public class SwitchLinkRenderer extends MalisisRenderer<LinkedPowerTileEntity>
 	@Override
 	public void render()
 	{
-		if (!EntityUtils.isEquipped(Minecraft.getMinecraft().thePlayer, MalisisSwitches.Items.powerLinker, EnumHand.MAIN_HAND))
+		if (!EntityUtils.isEquipped(Utils.getClientPlayer(), MalisisSwitches.Items.powerLinker, EnumHand.MAIN_HAND))
 			return;
 
 		Point startPoint = posToPoint(pos);
