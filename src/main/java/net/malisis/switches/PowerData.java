@@ -46,6 +46,12 @@ public class PowerData
 		return power;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "" + power;
+	}
+
 	public static ByteBuf toBytes(PowerData powerData)
 	{
 		ByteBuf buf = Unpooled.buffer(8);
