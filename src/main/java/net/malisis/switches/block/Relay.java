@@ -30,7 +30,8 @@ import net.malisis.core.block.MalisisBlock;
 import net.malisis.core.block.component.DirectionalComponent;
 import net.malisis.core.block.component.DirectionalComponent.IPlacement;
 import net.malisis.core.block.component.PowerComponent;
-import net.malisis.core.block.component.PowerComponent.Type;
+import net.malisis.core.block.component.PowerComponent.ComponentType;
+import net.malisis.core.block.component.PowerComponent.InteractionType;
 import net.malisis.core.renderer.icon.Icon;
 import net.malisis.core.renderer.icon.provider.IBlockIconProvider;
 import net.malisis.core.util.TileEntityUtils;
@@ -72,7 +73,7 @@ public class Relay extends MalisisBlock implements ITileEntityProvider
 		setName("relay");
 
 		addComponent(new DirectionalComponent(DirectionalComponent.ALL, IPlacement.BLOCKSIDE));
-		addComponent(new PowerComponent(Type.REDSTONE));
+		addComponent(new PowerComponent(InteractionType.REDSTONE, ComponentType.BOTH));
 
 		if (MalisisCore.isClient())
 		{
@@ -154,7 +155,7 @@ public class Relay extends MalisisBlock implements ITileEntityProvider
 	{
 		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
 		if (te != null)
-			te.setPower(0);
+			te.setPower(0, true);
 	}
 
 	@Override

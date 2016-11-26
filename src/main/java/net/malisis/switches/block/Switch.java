@@ -30,7 +30,8 @@ import net.malisis.core.block.MalisisBlock;
 import net.malisis.core.block.component.DirectionalComponent;
 import net.malisis.core.block.component.DirectionalComponent.IPlacement;
 import net.malisis.core.block.component.PowerComponent;
-import net.malisis.core.block.component.PowerComponent.Type;
+import net.malisis.core.block.component.PowerComponent.ComponentType;
+import net.malisis.core.block.component.PowerComponent.InteractionType;
 import net.malisis.core.renderer.DefaultRenderer;
 import net.malisis.core.renderer.MalisisRendered;
 import net.malisis.core.renderer.icon.provider.IIconProvider;
@@ -71,7 +72,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 		this.aabb = new AxisAlignedBB(0.5F - width / 2, 0.5F - height / 2, 0, 0.5F + width / 2, 0.5F + height / 2, depth);
 
 		addComponent(new DirectionalComponent(DirectionalComponent.ALL, IPlacement.BLOCKSIDE));
-		addComponent(new PowerComponent(Type.RIGHT_CLICK));
+		addComponent(new PowerComponent(InteractionType.RIGHT_CLICK, ComponentType.PROVIDER));
 
 		if (MalisisCore.isClient())
 		{
@@ -92,12 +93,10 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	{
 		super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
 
-		world.notifyNeighborsOfStateChange(pos, this);
-		world.notifyNeighborsOfStateChange(pos.offset(DirectionalComponent.getDirection(state).getOpposite()), this);
-
 		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
 		if (te != null)
 			te.setPower(PowerComponent.isPowered(world, pos) ? 15 : 0); //use world,pos to get the updated state
+
 		return true;
 	}
 
@@ -171,15 +170,10 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state)
 	{
-		if (PowerComponent.isPowered(state))
-		{
-			world.notifyNeighborsOfStateChange(pos, this);
-			world.notifyNeighborsOfStateChange(pos.offset(DirectionalComponent.getDirection(state).getOpposite()), this);
-		}
-
 		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
 		if (te != null)
-			te.setPower(0);
+			te.setPower(0, true);
+		super.breakBlock(world, pos, state);
 	}
 
 	@Override

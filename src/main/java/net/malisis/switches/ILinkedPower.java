@@ -70,7 +70,7 @@ public interface ILinkedPower
 		if (!linkedPositions().remove(pos))
 			return false;
 
-		PowerManager.setPower(getWorld(), pos, 0);
+		PowerManager.setPower(getWorld(), pos, 0, false);
 		getWorld().notifyBlockOfStateChange(pos, getBlockType());
 		getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
 
@@ -79,9 +79,14 @@ public interface ILinkedPower
 
 	public default void setPower(int power)
 	{
+		setPower(power, false);
+	}
+
+	public default void setPower(int power, boolean sendToClients)
+	{
 		for (BlockPos pos : linkedPositions())
 		{
-			PowerManager.setPower(getWorld(), pos, power);
+			PowerManager.setPower(getWorld(), pos, power, sendToClients);
 			getWorld().notifyBlockOfStateChange(pos, getBlockType());
 			getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
 		}

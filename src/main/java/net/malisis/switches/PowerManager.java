@@ -47,18 +47,18 @@ public class PowerManager
 		return data != null ? data.getPower() : 0;
 	}
 
-	public static void setPower(World world, BlockPos pos, int amount)
+	public static void setPower(World world, BlockPos pos, int amount, boolean sendToClients)
 	{
 		if (amount <= 0)
 		{
-			BlockDataHandler.removeData(POWER_BLOCK_DATA, world, pos);
+			BlockDataHandler.removeData(POWER_BLOCK_DATA, world, pos, sendToClients);
 			return;
 		}
 
 		if (amount > 15)
 			amount = 15;
 
-		BlockDataHandler.setData(POWER_BLOCK_DATA, world, pos, new PowerData(15));
+		BlockDataHandler.setData(POWER_BLOCK_DATA, world, pos, new PowerData(15), sendToClients);
 	}
 
 	public static int getRedstonePower(World world, BlockPos pos, EnumFacing side)

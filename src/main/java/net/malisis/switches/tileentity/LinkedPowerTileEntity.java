@@ -49,6 +49,7 @@ public class LinkedPowerTileEntity extends TileEntity implements ILinkedPower
 {
 	Set<BlockPos> linkedPos = Sets.newHashSet();
 
+	@Override
 	public Set<BlockPos> linkedPositions()
 	{
 		return linkedPos;
@@ -72,6 +73,12 @@ public class LinkedPowerTileEntity extends TileEntity implements ILinkedPower
 		ByteBuf bytes = Unpooled.copiedBuffer(tag.getByteArray("linkedPos"));
 		for (int i = 0; i < bytes.capacity() / 8; i++)
 			linkedPos.add(BlockPos.fromLong(bytes.readLong()));
+	}
+
+	@Override
+	public NBTTagCompound getUpdateTag()
+	{
+		return writeToNBT(new NBTTagCompound());
 	}
 
 	@Override
