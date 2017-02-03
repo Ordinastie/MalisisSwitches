@@ -126,9 +126,9 @@ public class Relay extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock)
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos)
 	{
-		super.neighborChanged(state, world, pos, neighborBlock);
+		super.neighborChanged(state, world, pos, neighborBlock, fromPos);
 
 		EnumFacing dir = DirectionalComponent.getDirection(world, pos).getOpposite();
 		if (!world.isSideSolid(pos.offset(dir), dir))

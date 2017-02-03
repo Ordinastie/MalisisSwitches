@@ -37,13 +37,13 @@ import net.malisis.core.renderer.MalisisRendered;
 import net.malisis.core.renderer.icon.provider.IIconProvider;
 import net.malisis.core.util.TileEntityUtils;
 import net.malisis.switches.MalisisSwitches;
+import net.malisis.switches.SwitchData;
 import net.malisis.switches.tileentity.LinkedPowerTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -62,36 +62,36 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 {
 	private AxisAlignedBB aabb;
 
-	public Switch(String name, float width, float height, float depth)
+	public Switch(SwitchData data)
 	{
 		super(Material.IRON);
 		setCreativeTab(MalisisSwitches.tab);
 		setHardness(1.0F);
-		setName(name);
+		setName(data.name);
 
-		this.aabb = new AxisAlignedBB(0.5F - width / 2, 0.5F - height / 2, 0, 0.5F + width / 2, 0.5F + height / 2, depth);
+		this.aabb = new AxisAlignedBB(	0.5F - data.size.x / 2,
+										0.5F - data.size.y / 2,
+										0,
+										0.5F + data.size.x / 2,
+										0.5F + data.size.y / 2,
+										data.size.z);
 
 		addComponent(new DirectionalComponent(DirectionalComponent.ALL, IPlacement.BLOCKSIDE));
 		addComponent(new PowerComponent(InteractionType.RIGHT_CLICK, ComponentType.PROVIDER));
 
 		if (MalisisCore.isClient())
 		{
-			addComponent(IIconProvider.create(MalisisSwitches.modid + ":blocks/", name + "_on")
+			addComponent(IIconProvider	.create(MalisisSwitches.modid + ":blocks/", data.textureName + "_on")
 										.forProperty(PowerComponent.getProperty(this))
-										.withValue(false, name + "_off")
+										.withValue(false, data.textureName + "_off")
 										.build());
 		}
 	}
 
-	public Switch(String name, float width, float height)
-	{
-		this(name, width, height, 0.01F);
-	}
-
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
+		super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 
 		LinkedPowerTileEntity te = TileEntityUtils.getTileEntity(LinkedPowerTileEntity.class, world, pos);
 		if (te != null)
@@ -126,9 +126,9 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock)
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighborBlock, BlockPos fromPos)
 	{
-		super.neighborChanged(state, world, pos, neighborBlock);
+		super.neighborChanged(state, world, pos, neighborBlock, fromPos);
 
 		EnumFacing dir = DirectionalComponent.getDirection(state);
 		if (world.isSideSolid(pos.offset(dir.getOpposite()), dir, true))
@@ -177,7 +177,7 @@ public class Switch extends MalisisBlock implements ITileEntityProvider
 	}
 
 	@Override
-	public boolean canRenderInLayer(BlockRenderLayer layer)
+	public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
 	{
 		return layer == BlockRenderLayer.CUTOUT_MIPPED;
 	}

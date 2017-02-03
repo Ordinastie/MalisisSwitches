@@ -38,6 +38,17 @@ public interface ILinkedPower
 {
 	public Set<BlockPos> linkedPositions();
 
+	public default BlockPos getPos()
+	{
+		return func_174877_v();
+	}
+
+	//obf for TileEntity.GetPos
+	public default BlockPos func_174877_v()
+	{
+		throw new IllegalStateException();
+	}
+
 	public default World getWorld()
 	{
 		return func_145831_w();
@@ -71,8 +82,8 @@ public interface ILinkedPower
 			return false;
 
 		PowerManager.setPower(getWorld(), pos, 0, false);
-		getWorld().notifyBlockOfStateChange(pos, getBlockType());
-		getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
+		getWorld().neighborChanged(pos, getBlockType(), getPos());
+		getWorld().notifyNeighborsOfStateChange(pos, getBlockType(), true);
 
 		return true;
 	}
@@ -87,8 +98,8 @@ public interface ILinkedPower
 		for (BlockPos pos : linkedPositions())
 		{
 			PowerManager.setPower(getWorld(), pos, power, sendToClients);
-			getWorld().notifyBlockOfStateChange(pos, getBlockType());
-			getWorld().notifyNeighborsOfStateChange(pos, getBlockType());
+			getWorld().neighborChanged(pos, getBlockType(), getPos());
+			getWorld().notifyNeighborsOfStateChange(pos, getBlockType(), true);
 		}
 	}
 

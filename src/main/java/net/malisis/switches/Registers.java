@@ -26,6 +26,7 @@ package net.malisis.switches;
 
 import static net.malisis.switches.MalisisSwitches.Blocks.*;
 import static net.malisis.switches.MalisisSwitches.Items.*;
+
 import net.malisis.switches.block.Relay;
 import net.malisis.switches.block.Switch;
 import net.malisis.switches.item.GreenStone;
@@ -66,11 +67,11 @@ public class Registers
 		ItemStack green = new ItemStack(greenStone);
 		ItemStack red = new ItemStack(Items.REDSTONE);
 
-		basicSwitch1 = new Switch("basicSwitch1", 0.5F, 0.5F);
+		basicSwitch1 = new Switch(SwitchData.BASIC_SWITCH_1);
 		basicSwitch1.register();
 		GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), lever, green, red, new ItemStack(Items.IRON_INGOT));
 
-		lightSwitch1 = new Switch("lightSwitch1", 0.3F, 0.5F);
+		lightSwitch1 = new Switch(SwitchData.LIGHT_SWITCH_1);
 		lightSwitch1.register();
 		GameRegistry.addShapelessRecipe(new ItemStack(lightSwitch1), lever, green, red, new ItemStack(Blocks.QUARTZ_BLOCK));
 
@@ -81,7 +82,15 @@ public class Registers
 		relay = new Relay();
 		relay.register();
 
-		GameRegistry.addShapedRecipe(new ItemStack(relay), "ABA", "BCB", "ABA", 'A', new ItemStack(greenStone), 'B', new ItemStack(
-				Items.REDSTONE), 'C', new ItemStack(Items.REPEATER));
+		GameRegistry.addShapedRecipe(	new ItemStack(relay),
+										"ABA",
+										"BCB",
+										"ABA",
+										'A',
+										new ItemStack(greenStone),
+										'B',
+										new ItemStack(Items.REDSTONE),
+										'C',
+										new ItemStack(Items.REPEATER));
 	}
 }

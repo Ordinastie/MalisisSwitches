@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Ordinastie
+ * Copyright (c) 2017 Ordinastie
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,25 @@
 
 package net.malisis.switches;
 
-import net.malisis.switches.MalisisSwitches.Blocks;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
+import net.malisis.core.util.Vector;
 
 /**
  * @author Ordinastie
  *
  */
-public class MalisisSwitchesTab extends CreativeTabs
+public class SwitchData
 {
-	public MalisisSwitchesTab()
-	{
-		super(MalisisSwitches.modid);
-	}
+	public static final SwitchData BASIC_SWITCH_1 = new SwitchData("basicSwitch1", "basic_switch1", new Vector(0.5F, 0.5F, 0.01F));
+	public static final SwitchData LIGHT_SWITCH_1 = new SwitchData("lightSwitch1", "light_switch1", new Vector(0.3F, 0.5F, 0.01F));
 
-	@Override
-	public ItemStack getTabIconItem()
+	public String name;
+	public String textureName;
+	public Vector size;
+
+	public SwitchData(String name, String textureName, Vector size)
 	{
-		return new ItemStack(Blocks.basicSwitch1);
+		this.name = name;
+		this.textureName = textureName;
+		this.size = size;
 	}
 }

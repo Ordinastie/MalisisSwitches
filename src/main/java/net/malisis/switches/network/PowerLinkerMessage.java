@@ -56,26 +56,28 @@ public class PowerLinkerMessage implements IMalisisMessageHandler<PowerLinkerMes
 		if (!EntityUtils.isEquipped(player, MalisisSwitches.Items.powerLinker, EnumHand.MAIN_HAND))
 			return;
 
-		MalisisSwitches.Items.powerLinker.processClick(player.getHeldItem(EnumHand.MAIN_HAND),
-				player,
-				IMalisisMessageHandler.getWorld(ctx),
-				message.pos,
-				message.side);
+		MalisisSwitches.Items.powerLinker.processClick(	player,
+														message.hand,
+														IMalisisMessageHandler.getWorld(ctx),
+														message.pos,
+														message.side);
 	}
 
-	public static void sendClick(BlockPos pos, EnumFacing side)
+	public static void sendClick(BlockPos pos, EnumHand hand, EnumFacing side)
 	{
-		MalisisSwitches.network.sendToServer(new Packet(pos, side));
+		MalisisSwitches.network.sendToServer(new Packet(pos, hand, side));
 	}
 
 	public static class Packet implements IMessage
 	{
 		private BlockPos pos;
+		private EnumHand hand;
 		private EnumFacing side;
 
-		public Packet(BlockPos pos, EnumFacing side)
+		public Packet(BlockPos pos, EnumHand hand, EnumFacing side)
 		{
 			this.pos = pos;
+			this.hand = hand;
 			this.side = side;
 		}
 
@@ -86,6 +88,7 @@ public class PowerLinkerMessage implements IMalisisMessageHandler<PowerLinkerMes
 		public void fromBytes(ByteBuf buf)
 		{
 			pos = BlockPos.fromLong(buf.readLong());
+			hand = EnumHand.values()[buf.readInt()];
 			side = EnumFacing.getFront(buf.readInt());
 		}
 
@@ -93,6 +96,7 @@ public class PowerLinkerMessage implements IMalisisMessageHandler<PowerLinkerMes
 		public void toBytes(ByteBuf buf)
 		{
 			buf.writeLong(pos.toLong());
+			buf.writeInt(hand.ordinal());
 			buf.writeInt(side.getIndex());
 		}
 	}

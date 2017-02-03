@@ -64,18 +64,19 @@ public class PowerLinker extends MalisisItem
 	}
 
 	@Override
-	public EnumActionResult onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
+	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
 	{
 		if (hand == EnumHand.OFF_HAND)
 			return EnumActionResult.PASS;
 
-		processClick(itemStack, player, world, pos, side);
-		PowerLinkerMessage.sendClick(pos, side);
+		processClick(player, hand, world, pos, side);
+		PowerLinkerMessage.sendClick(pos, hand, side);
 		return EnumActionResult.SUCCESS;
 	}
 
-	public void processClick(ItemStack itemStack, EntityPlayer player, World world, BlockPos pos, EnumFacing side)
+	public void processClick(EntityPlayer player, EnumHand hand, World world, BlockPos pos, EnumFacing side)
 	{
+		ItemStack itemStack = player.getHeldItem(hand);
 		if (!isStartSet(itemStack))
 		{
 			ILinkedPower lp = TileEntityUtils.getTileEntity(ILinkedPower.class, world, pos);
