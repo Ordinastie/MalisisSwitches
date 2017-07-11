@@ -1,0 +1,8 @@
+itemGroup.malisisswitches=Mechanizmy Malisis
+
+tile.basicSwitch1.name=Przełącznik
+tile.lightSwitch1.name=Przełącznik
+tile.relay.name=Przesyłacz
+
+item.powerLinker.name=Łącznik energii
+item.greenstone_dust=Greenstone
