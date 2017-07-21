@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"AB ",
+		"BA ",
+		"  A"
+	],
+	"key": {
+		"A": {
+			"item": "minecraft:iron_ingot"
+		},
+		"B": {
+			"item": "malisisswitches:greenstone_dust"
+		}
+	},
+	"result": {
+		"item": "malisisswitches:powerLinker"
+	}
+}

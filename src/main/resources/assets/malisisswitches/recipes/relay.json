@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"ABA",
+		"BCB",
+		"ABA"
+	],
+	"key": {
+		"A": {
+			"item": "malisisswitches:greenstone_dust"
+		},
+		"B": {
+			"item": "minecraft:redstone"
+		},
+		"C": {
+			"item": "minecraft:repeater"
+		}
+	},
+	"result": {
+		"item": "malisisswitches:relay"
+	}
+}

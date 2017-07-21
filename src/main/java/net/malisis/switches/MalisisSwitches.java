@@ -32,11 +32,9 @@ import net.malisis.core.network.MalisisNetwork;
 import net.malisis.switches.block.Relay;
 import net.malisis.switches.block.Switch;
 import net.malisis.switches.item.PowerLinker;
-import net.malisis.switches.renderer.SwitchLinkRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -92,14 +90,6 @@ public class MalisisSwitches implements IMalisisMod
 	{
 		Registers.init();
 		PowerManager.registerBlockData();
-	}
-
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event)
-	{
-		if (MalisisCore.isClient())
-			new SwitchLinkRenderer();
-
 	}
 
 	public static class Blocks

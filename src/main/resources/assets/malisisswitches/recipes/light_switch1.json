@@ -1,0 +1,21 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "minecraft:lever"
+		},
+		{
+			"item": "minecraft:redstone"
+		},
+		{
+			"item": "malisisswitches:greenstone_dust"
+		},
+		{
+			"item": "minecraft:quartz_block",
+			"data": 0
+		}
+	],
+	"result": {
+		"item": "malisisswitches:lightSwitch1"
+	}
+}

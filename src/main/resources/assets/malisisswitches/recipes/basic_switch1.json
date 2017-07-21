@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "minecraft:lever"
+		},
+		{
+			"item": "minecraft:redstone"
+		},
+		{
+			"item": "malisisswitches:greenstone_dust"
+		},
+		{
+			"item": "minecraft:iron_ingot"
+		}
+	],
+	"result": {
+		"item": "malisisswitches:basicSwitch1"
+	}
+}

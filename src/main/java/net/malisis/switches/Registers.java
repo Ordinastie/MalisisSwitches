@@ -32,9 +32,6 @@ import net.malisis.switches.block.Switch;
 import net.malisis.switches.item.GreenStone;
 import net.malisis.switches.item.PowerLinker;
 import net.malisis.switches.tileentity.LinkedPowerTileEntity;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class Registers
@@ -47,33 +44,29 @@ public class Registers
 
 		registerRelay();
 
-		GameRegistry.registerTileEntityWithAlternatives(LinkedPowerTileEntity.class, "linkedPowerTileEntity", "switchTileEntity");
+		GameRegistry.registerTileEntity(LinkedPowerTileEntity.class, "linkedPowerTileEntity");
 	}
 
 	private static void registerItems()
 	{
 		greenStone = new GreenStone();
 		greenStone.register();
-		GameRegistry.addRecipe(new ItemStack(greenStone, 8), "AAA", "ABA", "AAA", 'A', Items.REDSTONE, 'B', Items.EMERALD);
+		//GameRegistry.addRecipe(new ItemStack(greenStone, 8), "AAA", "ABA", "AAA", 'A', Items.REDSTONE, 'B', Items.EMERALD);
 
 		powerLinker = new PowerLinker();
 		powerLinker.register();
-		GameRegistry.addRecipe(new ItemStack(powerLinker), "AB ", "BA ", "  A", 'A', Items.IRON_INGOT, 'B', greenStone);
+		//GameRegistry.addRecipe(new ItemStack(powerLinker), "AB ", "BA ", "  A", 'A', Items.IRON_INGOT, 'B', greenStone);
 	}
 
 	private static void registerSwitches()
 	{
-		ItemStack lever = new ItemStack(Blocks.LEVER);
-		ItemStack green = new ItemStack(greenStone);
-		ItemStack red = new ItemStack(Items.REDSTONE);
-
 		basicSwitch1 = new Switch(SwitchData.BASIC_SWITCH_1);
 		basicSwitch1.register();
-		GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), lever, green, red, new ItemStack(Items.IRON_INGOT));
+		//	GameRegistry.addShapelessRecipe(new ItemStack(basicSwitch1), lever, green, red, new ItemStack(Items.IRON_INGOT));
 
 		lightSwitch1 = new Switch(SwitchData.LIGHT_SWITCH_1);
 		lightSwitch1.register();
-		GameRegistry.addShapelessRecipe(new ItemStack(lightSwitch1), lever, green, red, new ItemStack(Blocks.QUARTZ_BLOCK));
+		//	GameRegistry.addShapelessRecipe(new ItemStack(lightSwitch1), lever, green, red, new ItemStack(Blocks.QUARTZ_BLOCK));
 
 	}
 
@@ -82,15 +75,15 @@ public class Registers
 		relay = new Relay();
 		relay.register();
 
-		GameRegistry.addShapedRecipe(	new ItemStack(relay),
-										"ABA",
-										"BCB",
-										"ABA",
-										'A',
-										new ItemStack(greenStone),
-										'B',
-										new ItemStack(Items.REDSTONE),
-										'C',
-										new ItemStack(Items.REPEATER));
+		//		GameRegistry.addShapedRecipe(	new ItemStack(relay),
+		//										"ABA",
+		//										"BCB",
+		//										"ABA",
+		//										'A',
+		//										new ItemStack(greenStone),
+		//										'B',
+		//										new ItemStack(Items.REDSTONE),
+		//										'C',
+		//										new ItemStack(Items.REPEATER));
 	}
 }
