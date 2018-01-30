@@ -26,7 +26,7 @@ package net.malisis.switches.network;
 
 import io.netty.buffer.ByteBuf;
 import net.malisis.core.network.IMalisisMessageHandler;
-import net.malisis.core.network.MalisisMessage;
+import net.malisis.core.registry.AutoLoad;
 import net.malisis.core.util.EntityUtils;
 import net.malisis.switches.MalisisSwitches;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,7 +41,7 @@ import net.minecraftforge.fml.relauncher.Side;
  * @author Ordinastie
  *
  */
-@MalisisMessage
+@AutoLoad(true)
 public class PowerLinkerMessage implements IMalisisMessageHandler<PowerLinkerMessage.Packet, IMessage>
 {
 	public PowerLinkerMessage()
