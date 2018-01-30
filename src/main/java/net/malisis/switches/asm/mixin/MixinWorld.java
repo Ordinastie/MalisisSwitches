@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Ordinastie
+ * Copyright (c) 2018 Ordinastie
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,52 +22,32 @@
  * THE SOFTWARE.
  */
 
-package net.malisis.switches.asm;
+package net.malisis.switches.asm.mixin;
 
-import java.util.Map;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import org.spongepowered.asm.mixin.Mixins;
-
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
+import net.malisis.switches.PowerManager;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * @author Ordinastie
  *
  */
-@TransformerExclusions({ "net.malisis.switches.asm." })
-@IFMLLoadingPlugin.SortingIndex(1001)
-public class MalisisSwitchesPlugin implements IFMLLoadingPlugin
+@Mixin(value = World.class, priority = 1001)
+public class MixinWorld
 {
 
-	@Override
-	public String[] getASMTransformerClass()
+	@Inject(method = "getRedstonePower(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I",
+			at = @At("HEAD"),
+			cancellable = true)
+	private void getRedstonePower(BlockPos pos, EnumFacing side, CallbackInfoReturnable<Integer> cir)
 	{
-		//return new String[] { "net.malisis.switches.asm.MalisisSwitchesTransformer" };
-		Mixins.addConfiguration("mixins.malisis.switches.json");
-		return null;
+		int p = PowerManager.getRedstonePower((World) (Object) this, pos, side);
+		cir.setReturnValue(p);
 	}
-
-	@Override
-	public String getModContainerClass()
-	{
-		return null;
-	}
-
-	@Override
-	public String getSetupClass()
-	{
-		return null;
-	}
-
-	@Override
-	public void injectData(Map<String, Object> data)
-	{}
-
-	@Override
-	public String getAccessTransformerClass()
-	{
-		return null;
-	}
-
 }

@@ -25,14 +25,15 @@
 package net.malisis.switches.asm;
 
 import static org.objectweb.asm.Opcodes.*;
-import net.malisis.core.asm.AsmHook;
-import net.malisis.core.asm.MalisisClassTransformer;
-import net.malisis.core.asm.mappings.McpMethodMapping;
 
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import net.malisis.core.asm.AsmHook;
+import net.malisis.core.asm.MalisisClassTransformer;
+import net.malisis.core.asm.mappings.McpMethodMapping;
 
 /**
  * @author Ordinastie
@@ -48,8 +49,10 @@ public class MalisisSwitchesTransformer extends MalisisClassTransformer
 
 	private AsmHook getRedstonePower()
 	{
-		McpMethodMapping getRedstonePower = new McpMethodMapping("getRedstonePower", "func_175651_c", "net.minecraft.world.World",
-				"(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I");
+		McpMethodMapping getRedstonePower = new McpMethodMapping(	"getRedstonePower",
+																	"func_175651_c",
+																	"net.minecraft.world.World",
+																	"(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I");
 
 		AsmHook ah = new AsmHook(getRedstonePower);
 
@@ -63,11 +66,14 @@ public class MalisisSwitchesTransformer extends MalisisClassTransformer
 		insert.add(new VarInsnNode(ALOAD, 0));
 		insert.add(new VarInsnNode(ALOAD, 1));
 		insert.add(new VarInsnNode(ALOAD, 2));
-		insert.add(new MethodInsnNode(INVOKESTATIC, "net/malisis/switches/PowerManager", "getRedstonePower",
-				"(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I", false));
+		insert.add(new MethodInsnNode(	INVOKESTATIC,
+										"net/malisis/switches/PowerManager",
+										"getRedstonePower",
+										"(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)I",
+										false));
 		insert.add(new InsnNode(IRETURN));
 
-		ah.insert(insert);
+		ah.insert(insert).debug();
 		return ah;
 	}
 }
